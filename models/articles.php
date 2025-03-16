@@ -55,4 +55,21 @@ class Article
         }
         return null;
     }
+
+    public static function create($title, $abstract, $text, $user_id)
+    {
+        $db = Db::getInstance();
+
+        $title = mysqli_real_escape_string($db, $title);
+        $abstract = mysqli_real_escape_string($db, $abstract);
+        $text = mysqli_real_escape_string($db, $text);
+        $user_id = mysqli_real_escape_string($db, $user_id);
+
+        $query = "
+            INSERT INTO articles (title, abstract, text, user_id)
+            VALUES ('$title', '$abstract', '$text', $user_id)
+        ";
+
+        return $db->query($query);
+    }
 }

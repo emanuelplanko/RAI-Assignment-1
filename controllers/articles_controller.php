@@ -37,7 +37,36 @@ class articles_controller
         require_once('views/articles/show.php');
     }
 
-    public function create(){
+    public function store()
+    {
+        if (!isset($_SESSION["USER_ID"])) {
+            header("Location: /auth/login");
+            die();
+        }
+
+        $title = $_POST['title'] ?? '';
+        $abstract = $_POST['abstract'] ?? '';
+        $text = $_POST['text'] ?? '';
+
+        if (empty($title) || empty($abstract) || empty($text)) {
+
+            header("Location: /articles/create?error=1");
+            die();
+        }
+
+        $user_id = $_SESSION["USER_ID"];
+        if (Article::create($title, $abstract, $text, $user_id)) {
+            header("Location: /articles/index");
+            die();
+        } else {
+            header("Location: /articles/create?error=2");
+            die();
+        }
+    }
+
+
+    public function create()
+    {
         require_once('views/articles/create.php');
     }
 }
