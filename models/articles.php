@@ -55,4 +55,6 @@ class Article
         }
         return null;
     }
+
+    public static function create($title, $abstract, $text, $user_id) {}
 }

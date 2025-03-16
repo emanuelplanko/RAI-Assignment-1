@@ -37,7 +37,11 @@ class articles_controller
         require_once('views/articles/show.php');
     }
 
-    public function create(){
+    public function store() {}
+
+
+    public function create()
+    {
         require_once('views/articles/create.php');
     }
 }
