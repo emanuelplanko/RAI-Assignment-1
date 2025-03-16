@@ -136,6 +136,8 @@ class articles_controller
         }
     }
 
+    public function delete() {}
+
     public function create()
     {
         require_once('views/articles/create.php');

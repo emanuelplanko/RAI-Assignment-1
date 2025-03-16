@@ -116,4 +116,6 @@ class Article
         }
         return false;
     }
+
+    public function delete() {}
 }
