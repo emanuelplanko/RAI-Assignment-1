@@ -94,4 +94,26 @@ class Article
         }
         return $articles;
     }
+
+    public function update($title, $abstract, $text)
+    {
+        $db = Db::getInstance();
+        // Sanitize input values
+        $title = mysqli_real_escape_string($db, $title);
+        $abstract = mysqli_real_escape_string($db, $abstract);
+        $text = mysqli_real_escape_string($db, $text);
+
+        $query = "UPDATE articles 
+                  SET title = '$title', abstract = '$abstract', text = '$text' 
+                  WHERE id = $this->id LIMIT 1;";
+
+        if ($db->query($query)) {
+            // Optionally update the current object's properties
+            $this->title = $title;
+            $this->abstract = $abstract;
+            $this->text = $text;
+            return true;
+        }
+        return false;
+    }
 }
