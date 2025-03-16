@@ -64,6 +64,8 @@ class articles_controller
         }
     }
 
+    public function list() {}
+
 
     public function create()
     {

@@ -72,4 +72,6 @@ class Article
 
         return $db->query($query);
     }
+
+    public static function allByUser($user_id) {}
 }
