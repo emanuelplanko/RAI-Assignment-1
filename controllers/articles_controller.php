@@ -136,6 +136,35 @@ class articles_controller
         }
     }
 
+    public function delete()
+    {
+        if (!isset($_SESSION["USER_ID"])) {
+            header("Location: /auth/login");
+            die();
+        }
+
+        if (!isset($_GET['id'])) {
+            header("Location: /articles/list");
+            die();
+        }
+
+        $article = Article::find($_GET['id']);
+
+        if (!$article || $article->user->id != $_SESSION["USER_ID"]) {
+            header("Location: /pages/error");
+            die();
+        }
+
+        if ($article->delete()) {
+            header("Location: /articles/list");
+            die();
+        } else {
+            header("Location: /articles/list?error=delete");
+            die();
+        }
+    }
+
+
     public function create()
     {
         require_once('views/articles/create.php');
