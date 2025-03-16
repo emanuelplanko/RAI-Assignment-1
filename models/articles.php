@@ -72,4 +72,26 @@ class Article
 
         return $db->query($query);
     }
+
+    public static function allByUser($user_id)
+    {
+        $db = Db::getInstance();
+        $user_id = mysqli_real_escape_string($db, $user_id);
+
+        $query = "SELECT * FROM articles WHERE user_id = '$user_id' ORDER BY date DESC;";
+        $res = $db->query($query);
+
+        $articles = array();
+        while ($article = $res->fetch_object()) {
+            array_push($articles, new Article(
+                $article->id,
+                $article->title,
+                $article->abstract,
+                $article->text,
+                $article->date,
+                $article->user_id
+            ));
+        }
+        return $articles;
+    }
 }

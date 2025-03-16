@@ -64,6 +64,19 @@ class articles_controller
         }
     }
 
+    public function list()
+    {
+        if (!isset($_SESSION["USER_ID"])) {
+            header("Location: /auth/login");
+            die();
+        }
+
+        $user_id = $_SESSION["USER_ID"];
+        $articles = Article::allByUser($user_id);
+
+        require_once('views/articles/list.php');
+    }
+
 
     public function create()
     {
