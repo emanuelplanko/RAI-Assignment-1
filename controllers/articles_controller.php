@@ -77,6 +77,9 @@ class articles_controller
         require_once('views/articles/list.php');
     }
 
+    public function edit() {}
+
+    public function update() {}
 
     public function create()
     {

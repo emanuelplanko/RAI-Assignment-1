@@ -94,4 +94,6 @@ class Article
         }
         return $articles;
     }
+
+    public function update($title, $abstract, $text) {}
 }
