@@ -15,6 +15,8 @@
                     <?php echo date_format(date_create($article->date), 'd. m. Y \ob H:i:s'); ?>
                 </p>
                 <a href="/articles/show?id=<?php echo $article->id; ?>"><button>Preberi več</button></a>
+                <!-- Added Edit button -->
+                <a href="/articles/edit?id=<?php echo $article->id; ?>"><button>Uredi novico</button></a>
             </div>
     <?php
         }

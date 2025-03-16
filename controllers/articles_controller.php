@@ -77,9 +77,64 @@ class articles_controller
         require_once('views/articles/list.php');
     }
 
-    public function edit() {}
+    public function edit()
+    {
+        if (!isset($_SESSION["USER_ID"])) {
+            header("Location: /auth/login");
+            die();
+        }
 
-    public function update() {}
+        if (!isset($_GET['id'])) {
+            header("Location: /articles/list");
+            die();
+        }
+
+        $article = Article::find($_GET['id']);
+
+        if (!$article || $article->user->id != $_SESSION["USER_ID"]) {
+            header("Location: /pages/error");
+            die();
+        }
+
+        require_once('views/articles/edit.php');
+    }
+
+    public function update()
+    {
+        if (!isset($_SESSION["USER_ID"])) {
+            header("Location: /auth/login");
+            die();
+        }
+
+        if (!isset($_POST['id']) || !isset($_POST['title']) || !isset($_POST['abstract']) || !isset($_POST['text'])) {
+            header("Location: /articles/edit?id=" . ($_POST['id'] ?? ''));
+            die();
+        }
+
+        $article = Article::find($_POST['id']);
+
+        if (!$article || $article->user->id != $_SESSION["USER_ID"]) {
+            header("Location: /pages/error");
+            die();
+        }
+
+        $title = $_POST['title'];
+        $abstract = $_POST['abstract'];
+        $text = $_POST['text'];
+
+        if (empty($title) || empty($abstract) || empty($text)) {
+            header("Location: /articles/edit?id=" . $article->id . "&error=1");
+            die();
+        }
+
+        if ($article->update($title, $abstract, $text)) {
+            header("Location: /articles/show?id=" . $article->id);
+            die();
+        } else {
+            header("Location: /articles/edit?id=" . $article->id . "&error=2");
+            die();
+        }
+    }
 
     public function create()
     {
