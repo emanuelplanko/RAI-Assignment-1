@@ -2,7 +2,6 @@
     <h3>Uredi novico</h3>
 
     <?php
-    // Optionally display error messages based on query string error codes
     if (isset($_GET["error"])) {
         if ($_GET["error"] == 1) {
             echo '<p class="text-danger">Prosim, izpolnite vsa polja!</p>';
@@ -13,7 +12,6 @@
     ?>
 
     <form action="/articles/update" method="POST">
-        <!-- Include a hidden field for the article ID -->
         <input type="hidden" name="id" value="<?php echo $article->id; ?>">
 
         <div class="mb-3">
