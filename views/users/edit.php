@@ -9,6 +9,10 @@
             <label for="email" class="form-label">E-pošta</label>
             <input type="email" class="form-control" id="email" name="email" value="<?php echo $user->email; ?>">
         </div>
+        <p>
+            <a href="/users/edit_password">Spremeni geslo</a>
+        </p>
+
         <button type="submit" class="btn btn-primary" name="register">Shrani</button>
         <label class="text-danger"><?php echo $error; ?></label>
     </form>

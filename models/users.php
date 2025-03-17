@@ -89,5 +89,19 @@ class User
         }
     }
 
-    public function updatePassword($newPassword) {}
+    public function updatePassword($newPassword)
+    {
+        $db = Db::getInstance();
+        $hashed = password_hash($newPassword, PASSWORD_DEFAULT);
+
+        $hashed = mysqli_real_escape_string($db, $hashed);
+        $id = $this->id;
+
+        $query = "UPDATE users SET password='$hashed' WHERE id=$id LIMIT 1;";
+        if ($db->query($query)) {
+            $this->password = $hashed;
+            return true;
+        }
+        return false;
+    }
 }

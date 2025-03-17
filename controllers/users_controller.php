@@ -126,7 +126,53 @@ class users_controller
         require_once('views/users/show.php');
     }
 
-    public function edit_password() {}
+    public function edit_password()
+    {
+        if (!isset($_SESSION["USER_ID"])) {
+            header("Location: /auth/login");
+            die();
+        }
 
-    public function update_password() {}
+        $user = User::find($_SESSION["USER_ID"]);
+
+        require_once('views/users/edit_password.php');
+    }
+
+
+    public function update_password()
+    {
+        if (!isset($_SESSION["USER_ID"])) {
+            header("Location: /auth/login");
+            die();
+        }
+
+        if (!isset($_POST['old_password']) || !isset($_POST['new_password']) || !isset($_POST['repeat_password'])) {
+            header("Location: /users/edit_password?error=1");
+            die();
+        }
+
+        $user = User::find($_SESSION["USER_ID"]);
+        if (!$user) {
+            header("Location: /pages/error");
+            die();
+        }
+
+        if (!password_verify($_POST['old_password'], $user->password)) {
+            header("Location: /users/edit_password?error=2");
+            die();
+        }
+
+        if ($_POST['new_password'] !== $_POST['repeat_password']) {
+            header("Location: /users/edit_password?error=3");
+            die();
+        }
+
+        $newPass = $_POST['new_password'];
+        if ($user->updatePassword($newPass)) {
+            header("Location: /users/show?id=" . $user->id . "&msg=pass_changed");
+        } else {
+            header("Location: /users/edit_password?error=4");
+        }
+        die();
+    }
 }
