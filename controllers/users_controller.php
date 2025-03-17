@@ -125,4 +125,8 @@ class users_controller
 
         require_once('views/users/show.php');
     }
+
+    public function edit_password() {}
+
+    public function update_password() {}
 }

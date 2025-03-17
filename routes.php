@@ -31,7 +31,7 @@ $controllers = array(
 );
 // Če je prijavljen, mu dovolimo še urejanje profila, odjavo in objavo novic
 if (isset($_SESSION["USER_ID"])) {
-  $controllers['users'] = array_merge($controllers['users'], ['edit', 'update']);
+  $controllers['users'] = array_merge($controllers['users'], ['edit', 'update', 'edit_password', 'update_password']);
   $controllers['auth'] = array_merge($controllers['auth'], ['logout']);
   $controllers['articles'] = array_merge($controllers['articles'], ['create', 'store', 'list', 'edit', 'update', 'delete']); // TODO: 'list', 'store', 'edit', 'update', 'delete'
   $controllers['comments'] = ['store'];
