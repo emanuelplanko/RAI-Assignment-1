@@ -13,7 +13,12 @@
         <h4><?php echo $article->title; ?></h4>
         <p><b>Povzetek:</b> <?php echo $article->abstract; ?></p>
         <p><?php echo $article->text; ?></p>
-        <p>Objavil: <?php echo $article->user->username; ?>, <?php echo date_format(date_create($article->date), 'd. m. Y \ob H:i:s'); ?></p>
+        <p> Objavil:
+            <a href="/users/show?id=<?php echo $article->user->id; ?>">
+                <?php echo $article->user->username; ?>
+            </a>,
+            <?php echo date_format(date_create($article->date), 'd. m. Y \ob H:i:s'); ?>
+        </p>
         <a href="<?php echo $backLink; ?>"><button>Nazaj</button></a>
 
         <hr>
@@ -29,7 +34,12 @@
             foreach ($comments as $comment) {
         ?>
                 <div class="comment">
-                    <p><strong><?php echo $comment->user->username; ?></strong> - <?php echo date_format(date_create($comment->date), 'd. m. Y H:i:s'); ?></p>
+                    <p> <strong>
+                            <a href="/users/show?id=<?php echo $comment->user->id; ?>">
+                                <?php echo $comment->user->username; ?>
+                            </a>
+                        </strong>
+                        - <?php echo date_format(date_create($comment->date), 'd. m. Y H:i:s'); ?></p>
                     <p><?php echo $comment->text; ?></p>
                 </div>
         <?php
