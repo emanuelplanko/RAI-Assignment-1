@@ -50,4 +50,17 @@ class Comment
                   VALUES ('$article_id', '$user_id', '$text')";
         return $db->query($query);
     }
+
+    public static function countByUser($user_id)
+    {
+        $db = Db::getInstance();
+        $user_id = mysqli_real_escape_string($db, $user_id);
+
+        $query = "SELECT COUNT(*) as total FROM comments WHERE user_id = '$user_id'";
+        $res = $db->query($query);
+        if ($row = $res->fetch_assoc()) {
+            return $row['total'];
+        }
+        return 0;
+    }
 }
