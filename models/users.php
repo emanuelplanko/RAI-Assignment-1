@@ -36,35 +36,37 @@ class User
     }
 
     // Metoda, ki preveri ustreznost podanega uporabniškega imena in gesla
-    public static function authenticate($username, $password){
+    public static function authenticate($username, $password)
+    {
         $db = Db::getInstance();
         $username = mysqli_real_escape_string($db, $username);
         $query = "SELECT * FROM users WHERE username='$username'";
         $res = $db->query($query);
         $user_obj = $res->fetch_object();
-        if($user_obj && password_verify($password, $user_obj->password)){
+        if ($user_obj && password_verify($password, $user_obj->password)) {
             return $user_obj->id;
         }
-            return -1;
+        return -1;
     }
 
     // Metoda, ki vstavi uporabnika v bazo v tabelo users
-    public static function create($username, $email, $password){
+    public static function create($username, $email, $password)
+    {
         $db = Db::getInstance();
         $username = mysqli_real_escape_string($db, $username);
         $email = mysqli_real_escape_string($db, $email);
         $pass = password_hash($password, PASSWORD_DEFAULT);
         $query = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$pass');";
-        if($db->query($query)){
+        if ($db->query($query)) {
             return true;
-        }
-        else{
+        } else {
             return false;
-        } 
+        }
     }
 
     // Metoda, ki preveri razpoložljivost uporabniškega imena
-    public static function is_available($username){
+    public static function is_available($username)
+    {
         $db = Db::getInstance();
         $username = mysqli_real_escape_string($db, $username);
         $query = "SELECT * FROM users WHERE username='$username'";
@@ -73,17 +75,33 @@ class User
     }
 
     // Metoda, ki posodobi uporabniko ime in e-mail od trenutnega uporabnika v bazi
-    public function update($username, $email){
+    public function update($username, $email)
+    {
         $db = Db::getInstance();
         $username = mysqli_real_escape_string($db, $username);
         $email = mysqli_real_escape_string($db, $email);
         $id = $this->id;
         $query = "UPDATE users SET username='$username', email='$email' WHERE id=$id LIMIT 1;";
-        if($db->query($query)){
+        if ($db->query($query)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function updatePassword($newPassword)
+    {
+        $db = Db::getInstance();
+        $hashed = password_hash($newPassword, PASSWORD_DEFAULT);
+
+        $hashed = mysqli_real_escape_string($db, $hashed);
+        $id = $this->id;
+
+        $query = "UPDATE users SET password='$hashed' WHERE id=$id LIMIT 1;";
+        if ($db->query($query)) {
+            $this->password = $hashed;
             return true;
         }
-        else{
-            return false;
-        } 
+        return false;
     }
 }
