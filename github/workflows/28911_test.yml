@@ -1,0 +1,81 @@
+name: 28911_test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-tests:
+    name: Preveri prisotnost testnih skript
+    runs-on: self-hosted
+
+    steps:
+      - name: Preverimo kodo (checkout)
+        uses: actions/checkout@v3
+
+      - name: Preveri, če obstaja mapa 'tests'
+        shell: bash
+        run: |
+          if [ ! -d "./tests" ]; then
+            echo "Manjka mapa 'tests', zato ni mogoče izvesti testov." > napaka.txt
+          elif [ -z "$(ls -A ./tests)" ]; then
+            echo "Mapa 'tests' je prazna — testne skripte ne obstajajo." > napaka.txt
+          else
+            echo "Testne skripte so prisotne."
+          fi
+
+      - name: Preusmeri standard error (simulacija napake)
+        shell: bash
+        run: |
+          echo "Preverjanje končano."
+
+      - name: Naloži napaka.txt kot artefakt
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: check-output
+          path: napaka.txt
+
+  run-tests:
+    name: Namesti okolje in pozeni teste (z matrico)
+    needs: [check-tests]
+    runs-on: self-hosted
+
+    strategy:
+      matrix:
+        php-version: [ '7.4', '8.0', '8.1' ]
+    steps:
+      - name: Prenesi artefakt "napaka.txt"
+        uses: actions/download-artifact@v3
+        with:
+          name: check-output
+          path: ./
+
+      - name: Preveri napako iz prvega posla
+        id: check_error
+        run: |
+          if [ -f napaka.txt ] && [ -s napaka.txt ]; then
+            echo "Testna skripta ni pravilno nastavljena ali manjka. Vsebina napaka.txt:"
+            cat napaka.txt
+            exit 1
+          else
+            echo "Brez napak v napaka.txt. Nadaljujemo s testi."
+          fi
+
+      - name: Nastavi PHP ({{ matrix.php-version }})
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+
+      - name: Namesti odvisnosti (če uporabljamo Composer)
+        run: composer install --no-progress --no-suggest
+
+      - name: Zaženi teste
+        shell: bash
+        run: |
+          if [ -f "./vendor/bin/phpunit" ]; then
+            ./vendor/bin/phpunit --verbose
+          else
+            echo "Ni PHPUnit, morda test.sh?"
+          fi
