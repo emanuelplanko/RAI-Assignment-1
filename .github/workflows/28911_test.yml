@@ -7,30 +7,30 @@ on:
 
 jobs:
   check-tests:
-    name: Preveri prisotnost testnih skript
+    name: Check for Test Scripts
     runs-on: self-hosted
 
     steps:
-      - name: Preverimo kodo (checkout)
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Preveri, če obstaja mapa 'tests'
+      - name: Verify existence of 'tests' folder
         shell: bash
         run: |
           if [ ! -d "./tests" ]; then
-            echo "Manjka mapa 'tests', zato ni mogoče izvesti testov." > napaka.txt
+            echo "The 'tests' folder is missing, so tests cannot be executed." > napaka.txt
           elif [ -z "$(ls -A ./tests)" ]; then
-            echo "Mapa 'tests' je prazna — testne skripte ne obstajajo." > napaka.txt
+            echo "The 'tests' folder is empty — test scripts do not exist." > napaka.txt
           else
-            echo "Testne skripte so prisotne."
+            echo "Test scripts are present."
           fi
 
-      - name: Preusmeri standard error (simulacija napake)
+      - name: Completion Message
         shell: bash
         run: |
-          echo "Preverjanje končano."
+          echo "Check completed."
 
-      - name: Naloži napaka.txt kot artefakt
+      - name: Upload napaka.txt as artifact
         if: always()
         uses: actions/upload-artifact@v3
         with:
@@ -38,7 +38,7 @@ jobs:
           path: napaka.txt
 
   run-tests:
-    name: Namesti okolje in pozeni teste (z matrico)
+    name: Set Up Environment and Run Tests (with matrix)
     needs: [check-tests]
     runs-on: self-hosted
 
@@ -46,36 +46,38 @@ jobs:
       matrix:
         php-version: [ '7.4', '8.0', '8.1' ]
     steps:
-      - name: Prenesi artefakt "napaka.txt"
+      - name: Download artifact "napaka.txt"
         uses: actions/download-artifact@v3
         with:
           name: check-output
           path: ./
 
-      - name: Preveri napako iz prvega posla
+      - name: Check for errors from the first job
         id: check_error
         run: |
           if [ -f napaka.txt ] && [ -s napaka.txt ]; then
-            echo "Testna skripta ni pravilno nastavljena ali manjka. Vsebina napaka.txt:"
+            echo "Test script not properly set up or missing. Contents of napaka.txt:"
             cat napaka.txt
             exit 1
           else
-            echo "Brez napak v napaka.txt. Nadaljujemo s testi."
+            echo "No errors in napaka.txt. Proceeding with tests."
           fi
 
-      - name: Nastavi PHP ({{ matrix.php-version }})
+      - name: Set up PHP (${{ matrix.php-version }})
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
 
-      - name: Namesti odvisnosti (če uporabljamo Composer)
+      - name: Install dependencies (if using Composer)
         run: composer install --no-progress --no-suggest
 
-      - name: Zaženi teste
+      - name: Run custom tests
         shell: bash
         run: |
-          if [ -f "./vendor/bin/phpunit" ]; then
-            ./vendor/bin/phpunit --verbose
+          if [ -f "./tests/test.sh" ]; then
+            echo "Running custom tests from tests/test.sh..."
+            bash ./tests/test.sh
           else
-            echo "Ni PHPUnit, morda test.sh?"
+            echo "No custom test script found! Exiting."
+            exit 1
           fi
